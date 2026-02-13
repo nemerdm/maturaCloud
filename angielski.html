@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Matura English Prep - v4.2 (Speed Match)</title>
+    <title>Matura English Prep - v5.1 (Grammar+)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -20,7 +20,7 @@
         .fade-out { animation: fadeOut 0.3s forwards; }
         @keyframes fadeOut { to { opacity: 0; transform: scale(0.9); } }
 
-        /* Flip Card Styles (Used for Flashcards only now) */
+        /* Flip Card Styles */
         .perspective-1000 { perspective: 1000px; }
         .transform-style-3d { transform-style: preserve-3d; }
         .backface-hidden { backface-visibility: hidden; }
@@ -31,8 +31,16 @@
         ::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 4px; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         
-        /* Speed Match Grid */
+        /* Grids */
         .match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+        
+        /* Grammar Blocks */
+        .g-block { padding: 4px 8px; border-radius: 6px; font-weight: 600; font-size: 0.85rem; display: inline-block; margin-right: 4px; margin-bottom: 4px; }
+        .gb-subject { background-color: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; } /* Blue - Podmiot */
+        .gb-verb { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; } /* Red - Czasownik */
+        .gb-object { background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; } /* Green - Reszta */
+        .gb-extra { background-color: #f3f4f6; color: #4b5563; border: 1px solid #e5e7eb; } /* Gray - Operator/Inne */
+        .gb-op { background-color: #fff7ed; color: #9a3412; border: 1px solid #ffedd5; } /* Orange - Operator */
     </style>
 </head>
 <body class="text-slate-800 h-screen flex flex-col overflow-hidden bg-slate-50">
@@ -41,7 +49,7 @@
     <header class="bg-white shadow-sm z-20 flex-none border-b border-slate-100">
         <div class="max-w-md mx-auto px-4 py-3 flex justify-between items-center">
             <div onclick="resetProgress()" class="cursor-pointer">
-                <h1 class="text-lg font-bold text-indigo-600 tracking-tight">English Prep <span class="text-xs font-normal text-indigo-300">v4.2</span></h1>
+                <h1 class="text-lg font-bold text-indigo-600 tracking-tight">English Prep <span class="text-xs font-normal text-indigo-300">v5.1</span></h1>
                 <p class="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Matura Podstawowa</p>
             </div>
             <div id="header-stats-container" class="text-right">
@@ -130,7 +138,7 @@
             </div>
         </div>
 
-        <!-- === VIEW: MATCHING (NEW SPEED MATCH) === -->
+        <!-- === VIEW: MEMORY === -->
         <div id="view-memory" class="absolute inset-0 overflow-y-auto p-4 flex flex-col pb-24 transition-opacity duration-300 hidden opacity-0">
             <div id="memory-start" class="w-full text-center mt-4">
                  <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-6">
@@ -140,17 +148,12 @@
                     <button onclick="startMemory()" class="w-full bg-pink-500 hover:bg-pink-600 text-white py-3.5 rounded-xl font-semibold shadow-lg shadow-pink-200 active:scale-95 transition-all">Graj</button>
                  </div>
             </div>
-            
             <div id="memory-game" class="hidden w-full">
                 <div class="flex justify-between items-center mb-4">
                      <span class="text-xs font-bold text-slate-400 uppercase">Pozostało: <span id="memory-score" class="text-pink-600 font-bold">6</span> par</span>
                      <button onclick="startMemory()" class="text-xs text-slate-400 underline">Restart</button>
                 </div>
-                
-                <div id="memory-grid" class="match-grid pb-20">
-                    <!-- Cards injected here -->
-                </div>
-
+                <div id="memory-grid" class="match-grid pb-20"></div>
                 <div id="memory-win" class="hidden fixed inset-0 flex items-center justify-center bg-black/50 z-50 p-4">
                     <div class="bg-white p-8 rounded-2xl shadow-xl text-center pop-in max-w-sm w-full">
                         <div class="text-5xl mb-4">🚀</div>
@@ -208,7 +211,7 @@
             </div>
         </div>
 
-        <!-- === VIEW: DICTIONARY === -->
+        <!-- === VIEW: VOCAB === -->
         <div id="view-vocab" class="absolute inset-0 overflow-y-auto bg-slate-50 p-4 pb-24 hidden opacity-0 transition-opacity duration-300">
             <div class="sticky top-0 bg-slate-50 pt-2 pb-4 z-10">
                 <div class="relative">
@@ -219,30 +222,51 @@
             <div id="vocab-list" class="space-y-3"></div>
         </div>
 
+        <!-- === VIEW: GRAMMAR (NEW) === -->
+        <div id="view-grammar" class="absolute inset-0 overflow-y-auto bg-slate-50 p-4 pb-24 hidden opacity-0 transition-opacity duration-300">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-6 text-center">
+                <div class="text-5xl mb-4">📚</div>
+                <h2 class="text-xl font-bold mb-2 text-slate-800">Gramatyka w Pigułce</h2>
+                <p class="text-slate-500 text-sm">Zrozum logikę, a przestaniesz "strzelać".</p>
+                <div class="mt-4 flex flex-wrap justify-center gap-2 text-[10px] uppercase font-bold text-slate-400">
+                    <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded">Podmiot</span>
+                    <span class="px-2 py-1 bg-red-100 text-red-700 rounded">Czasownik</span>
+                    <span class="px-2 py-1 bg-orange-50 text-orange-700 border border-orange-200 rounded">Operator</span>
+                </div>
+            </div>
+            <div id="grammar-list" class="space-y-4">
+                <!-- Grammar cards injected here -->
+            </div>
+        </div>
+
     </main>
 
     <!-- Bottom Navigation -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 pb-safe z-30 shadow-[0_-5px_15px_rgba(0,0,0,0.02)]">
-        <div class="max-w-md mx-auto flex justify-between items-center h-16 px-2">
-            <button onclick="switchTab('quiz')" id="nav-quiz" class="flex-1 flex flex-col items-center justify-center text-indigo-600 transition-colors">
-                <span class="text-2xl mb-0.5">📝</span>
-                <span class="text-[10px] font-bold uppercase tracking-wide">Quiz</span>
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 pb-safe z-30 shadow-[0_-5px_15px_rgba(0,0,0,0.02)] overflow-x-auto no-scrollbar">
+        <div class="min-w-full flex justify-between items-center h-16 px-2">
+            <button onclick="switchTab('quiz')" id="nav-quiz" class="min-w-[60px] flex-1 flex flex-col items-center justify-center text-indigo-600 transition-colors">
+                <span class="text-xl mb-0.5">📝</span>
+                <span class="text-[9px] font-bold uppercase tracking-wide">Quiz</span>
             </button>
-            <button onclick="switchTab('scramble')" id="nav-scramble" class="flex-1 flex flex-col items-center justify-center text-slate-400 hover:text-purple-600 transition-colors">
-                <span class="text-2xl mb-0.5">🧩</span>
-                <span class="text-[10px] font-bold uppercase tracking-wide">Zdania</span>
+            <button onclick="switchTab('scramble')" id="nav-scramble" class="min-w-[60px] flex-1 flex flex-col items-center justify-center text-slate-400 hover:text-purple-600 transition-colors">
+                <span class="text-xl mb-0.5">🧩</span>
+                <span class="text-[9px] font-bold uppercase tracking-wide">Zdania</span>
             </button>
-            <button onclick="switchTab('memory')" id="nav-memory" class="flex-1 flex flex-col items-center justify-center text-slate-400 hover:text-pink-500 transition-colors">
-                <span class="text-2xl mb-0.5">⚡</span>
-                <span class="text-[10px] font-bold uppercase tracking-wide">Pary</span>
+            <button onclick="switchTab('memory')" id="nav-memory" class="min-w-[60px] flex-1 flex flex-col items-center justify-center text-slate-400 hover:text-pink-500 transition-colors">
+                <span class="text-xl mb-0.5">⚡</span>
+                <span class="text-[9px] font-bold uppercase tracking-wide">Pary</span>
             </button>
-            <button onclick="switchTab('flashcards')" id="nav-flash" class="flex-1 flex flex-col items-center justify-center text-slate-400 hover:text-indigo-500 transition-colors">
-                <span class="text-2xl mb-0.5">🧠</span>
-                <span class="text-[10px] font-bold uppercase tracking-wide">Fiszki</span>
+            <button onclick="switchTab('flashcards')" id="nav-flashcards" class="min-w-[60px] flex-1 flex flex-col items-center justify-center text-slate-400 hover:text-indigo-500 transition-colors">
+                <span class="text-xl mb-0.5">🧠</span>
+                <span class="text-[9px] font-bold uppercase tracking-wide">Fiszki</span>
             </button>
-            <button onclick="switchTab('vocab')" id="nav-vocab" class="flex-1 flex flex-col items-center justify-center text-slate-400 hover:text-indigo-500 transition-colors">
-                <span class="text-2xl mb-0.5">📖</span>
-                <span class="text-[10px] font-bold uppercase tracking-wide">Słownik</span>
+            <button onclick="switchTab('vocab')" id="nav-vocab" class="min-w-[60px] flex-1 flex flex-col items-center justify-center text-slate-400 hover:text-indigo-500 transition-colors">
+                <span class="text-xl mb-0.5">📖</span>
+                <span class="text-[9px] font-bold uppercase tracking-wide">Słownik</span>
+            </button>
+            <button onclick="switchTab('grammar')" id="nav-grammar" class="min-w-[60px] flex-1 flex flex-col items-center justify-center text-slate-400 hover:text-teal-600 transition-colors">
+                <span class="text-xl mb-0.5">🎓</span>
+                <span class="text-[9px] font-bold uppercase tracking-wide">Teoria</span>
             </button>
         </div>
     </nav>
@@ -278,6 +302,136 @@
             { id: 'v26', en: "have something done", pl: "zlecić coś", ex: "I must have my car repaired." }
         ];
 
+        const grammarTopics = [
+            {
+                title: "Budowa Zdania (Twierdzące)",
+                desc: "Złota zasada angielskiego: SVO (Subject-Verb-Object). Kto? Co robi? Co/Gdzie?",
+                structure: [
+                    { type: 'sub', text: "Kto? (Subject)" },
+                    { type: 'verb', text: "Co robi? (Verb)" },
+                    { type: 'obj', text: "Reszta (Object)" }
+                ],
+                examples: [
+                    { en: "Tom eats pizza.", pl: "Tom je pizzę.", blocks: [["Tom", "sub"], ["eats", "verb"], ["pizza", "obj"]] },
+                    { en: "We live in Poland.", pl: "Mieszkamy w Polsce.", blocks: [["We", "sub"], ["live", "verb"], ["in Poland", "obj"]] }
+                ]
+            },
+            {
+                title: "Pytania i Przeczenia (Operator)",
+                desc: "W angielskim potrzebujesz 'pomocnika' (Operatora) do pytań i przeczeń. Operator bierze na siebie gramatykę.",
+                structure: [
+                    { type: 'op', text: "Operator" },
+                    { type: 'sub', text: "Kto?" },
+                    { type: 'verb', text: "Czasownik (Baza)" }
+                ],
+                examples: [
+                    { en: "Do you like coffee?", pl: "Lubisz kawę?", blocks: [["Do", "op"], ["you", "sub"], ["like", "verb"], ["coffee?", "obj"]] },
+                    { en: "He doesn't work here.", pl: "On tu nie pracuje.", blocks: [["He", "sub"], ["doesn't", "op"], ["work", "verb"], ["here", "obj"]] }
+                ]
+            },
+            {
+                title: "Present Simple (Rutyna)",
+                desc: "Fakty, nawyki, rozkłady jazdy. Słowa klucze: always, usually, every day.",
+                structure: [
+                    { type: 'sub', text: "Kto" },
+                    { type: 'verb', text: "Czasownik (+s dla On/Ona)" }
+                ],
+                examples: [
+                    { en: "She drinks tea.", pl: "Ona pije herbatę (ogólnie).", blocks: [["She", "sub"], ["drinks", "verb"], ["tea", "obj"]] }
+                ]
+            },
+            {
+                title: "Present Continuous (Teraz)",
+                desc: "Dzieje się w tym momencie. Słowa klucze: now, at the moment.",
+                structure: [
+                    { type: 'sub', text: "Kto" },
+                    { type: 'verb', text: "am/is/are" },
+                    { type: 'verb', text: "Czasownik + ING" }
+                ],
+                examples: [
+                    { en: "She is drinking tea.", pl: "Ona pije herbatę (w tej chwili).", blocks: [["She", "sub"], ["is", "verb"], ["drinking", "verb"], ["tea", "obj"]] }
+                ]
+            },
+            {
+                title: "Past Simple (Przeszłość)",
+                desc: "Czynność zakończona w przeszłości. Daty, wczoraj. Operator: DID.",
+                structure: [
+                    { type: 'sub', text: "Kto" },
+                    { type: 'verb', text: "2. Forma / -ed" }
+                ],
+                examples: [
+                    { en: "I watched TV yesterday.", pl: "Oglądałem TV wczoraj.", blocks: [["I", "sub"], ["watched", "verb"], ["TV", "obj"], ["yesterday", "extra"]] },
+                    { en: "Did you go there?", pl: "Poszedłeś tam?", blocks: [["Did", "op"], ["you", "sub"], ["go", "verb"], ["there?", "extra"]] }
+                ]
+            },
+            {
+                title: "Causative Have (Mieć coś zrobione)",
+                desc: "Używamy, gdy NIE robimy czegoś sami, ale zlecamy to komuś (np. mechanikowi, fryzjerowi).",
+                structure: [
+                    { type: 'sub', text: "Podmiot" },
+                    { type: 'verb', text: "Have" },
+                    { type: 'obj', text: "Coś" },
+                    { type: 'verb', text: "3. Forma" }
+                ],
+                examples: [
+                    { en: "I have my car repaired.", pl: "Naprawiam samochód (u mechanika).", blocks: [["I", "sub"], ["have", "verb"], ["my car", "obj"], ["repaired", "verb"]] },
+                    { en: "She had her hair cut.", pl: "Ona ścięła włosy (u fryzjera).", blocks: [["She", "sub"], ["had", "verb"], ["her hair", "obj"], ["cut", "verb"]] }
+                ]
+            },
+            {
+                title: "Passive Voice (Strona Bierna)",
+                desc: "Ważniejsza jest czynność lub obiekt, a nie osoba wykonująca. Częste w instrukcjach i wiadomościach.",
+                structure: [
+                    { type: 'obj', text: "Obiekt" },
+                    { type: 'verb', text: "To Be" },
+                    { type: 'verb', text: "3. Forma" }
+                ],
+                examples: [
+                    { en: "This room needs tidying up.", pl: "Ten pokój wymaga sprzątania.", blocks: [["This room", "obj"], ["needs", "verb"], ["tidying up", "verb"]] },
+                    { en: "Dinner is served.", pl: "Obiad jest podany.", blocks: [["Dinner", "obj"], ["is", "verb"], ["served", "verb"]] }
+                ]
+            },
+            {
+                title: "It's High Time (Najwyższy Czas)",
+                desc: "Specyficzna konstrukcja. Mimo że mówimy o teraz/przyszłości, używamy czasu przeszłego!",
+                structure: [
+                    { type: 'extra', text: "It's high time" },
+                    { type: 'sub', text: "Ktoś" },
+                    { type: 'verb', text: "Past Simple" }
+                ],
+                examples: [
+                    { en: "It's high time we went home.", pl: "Najwyższy czas, byśmy poszli do domu.", blocks: [["It's high time", "extra"], ["we", "sub"], ["went", "verb"], ["home", "extra"]] }
+                ]
+            },
+            {
+                title: "2nd Conditional (Gdybanie)",
+                desc: "Sytuacje hipotetyczne, mało realne w teraźniejszości. 'Gdybym był Tobą...'",
+                structure: [
+                    { type: 'extra', text: "If" },
+                    { type: 'sub', text: "Podmiot" },
+                    { type: 'verb', text: "Past Simple" },
+                    { type: 'extra', text: "," },
+                    { type: 'sub', text: "Podmiot" },
+                    { type: 'verb', text: "Would + Czasownik" }
+                ],
+                examples: [
+                    { en: "If I were you, I would buy it.", pl: "Na Twoim miejscu bym to kupił.", blocks: [["If", "extra"], ["I", "sub"], ["were", "verb"], ["you", "obj"], ["I", "sub"], ["would buy", "verb"], ["it", "obj"]] }
+                ]
+            },
+            {
+                title: "Get Used To (Przyzwyczaić się)",
+                desc: "Opisuje proces zmiany. Bardzo ważne: po 'to' ZAWSZE dajemy czasownik z końcówką -ING.",
+                structure: [
+                    { type: 'sub', text: "Podmiot" },
+                    { type: 'verb', text: "Get used to" },
+                    { type: 'verb', text: "Czasownik + ING" }
+                ],
+                examples: [
+                    { en: "I can't get used to getting up early.", pl: "Nie mogę przywyknąć do wstawania rano.", blocks: [["I", "sub"], ["can't get used to", "verb"], ["getting up", "verb"], ["early", "extra"]] }
+                ]
+            }
+        ];
+
         const quizData = [
             { id: 1, category: "Dom", question: "Do you know anyone who likes _____ household chores?", context: "Lubi ROBIĆ prace domowe.", options: ["making", "to make", "doing"], correct: 2, explanation: "Z 'chores' używamy DO. Po 'like' używamy -ing." },
             { id: 2, category: "Dom", question: "This room needs _____ if you want to invite friends.", context: "Wymaga posprzątania (strona bierna)", options: ["tidying up", "to tidy up", "being tidied up"], correct: 0, explanation: "'It needs doing' = wymaga zrobienia." },
@@ -301,7 +455,7 @@
         ];
 
         // --- STATE & PERSISTENCE ---
-        const STORAGE_KEY = 'english_prep_v4';
+        const STORAGE_KEY = 'english_prep_v5';
         let state = {
             quiz: { queue: [], currentIndex: 0, score: 0, wrongIds: [], mode: 'full' },
             flash: { knownIds: [] }
@@ -313,14 +467,16 @@
                 flashcards: document.getElementById('view-flashcards'),
                 vocab: document.getElementById('view-vocab'),
                 scramble: document.getElementById('view-scramble'),
-                memory: document.getElementById('view-memory')
+                memory: document.getElementById('view-memory'),
+                grammar: document.getElementById('view-grammar')
             },
             nav: {
                 quiz: document.getElementById('nav-quiz'),
-                flashcards: document.getElementById('nav-flash'),
+                flashcards: document.getElementById('nav-flashcards'),
                 vocab: document.getElementById('nav-vocab'),
                 scramble: document.getElementById('nav-scramble'),
-                memory: document.getElementById('nav-memory')
+                memory: document.getElementById('nav-memory'),
+                grammar: document.getElementById('nav-grammar')
             },
             headerLabel: document.getElementById('header-label')
         };
@@ -328,6 +484,7 @@
         // --- INIT ---
         function init() {
             renderVocab(vocabularyData);
+            renderGrammar();
             loadState();
             switchTab('quiz'); // Default view
         }
@@ -349,7 +506,7 @@
         function switchTab(tab) {
             Object.values(ui.views).forEach(el => { el.classList.add('hidden', 'opacity-0'); });
             Object.values(ui.nav).forEach(el => { 
-                el.classList.remove('text-indigo-600', 'text-purple-600', 'text-pink-600'); 
+                el.classList.remove('text-indigo-600', 'text-purple-600', 'text-pink-600', 'text-teal-600'); 
                 el.classList.add('text-slate-400'); 
             });
 
@@ -358,17 +515,71 @@
             
             const navEl = ui.nav[tab];
             navEl.classList.remove('text-slate-400');
+            
             if(tab === 'scramble') navEl.classList.add('text-purple-600');
             else if(tab === 'memory') navEl.classList.add('text-pink-500');
+            else if(tab === 'grammar') navEl.classList.add('text-teal-600');
             else navEl.classList.add('text-indigo-600');
 
-            const labels = { quiz: 'Quiz', flashcards: 'Fiszki', scramble: 'Układanka', memory: 'Pary', vocab: 'Słownik' };
+            const labels = { quiz: 'Quiz', flashcards: 'Fiszki', scramble: 'Układanka', memory: 'Pary', vocab: 'Słownik', grammar: 'Teoria' };
             ui.headerLabel.textContent = labels[tab];
             
             if(tab === 'flashcards') updateFlashStats();
         }
 
-        // --- SCRAMBLE LOGIC (Existing) ---
+        // --- GRAMMAR LOGIC (NEW) ---
+        function renderGrammar() {
+            const list = document.getElementById('grammar-list');
+            list.innerHTML = '';
+            
+            grammarTopics.forEach(topic => {
+                const el = document.createElement('div');
+                el.className = "bg-white p-5 rounded-xl border border-slate-100 shadow-sm";
+                
+                // Build Structure HTML
+                let structHtml = '';
+                topic.structure.forEach(part => {
+                    let c = 'gb-extra';
+                    if(part.type === 'sub') c = 'gb-subject';
+                    if(part.type === 'verb') c = 'gb-verb';
+                    if(part.type === 'obj') c = 'gb-object';
+                    if(part.type === 'op') c = 'gb-op';
+                    structHtml += `<span class="g-block ${c}">${part.text}</span>`;
+                });
+
+                // Build Examples HTML
+                let exHtml = '';
+                topic.examples.forEach(ex => {
+                    let blocksHtml = '';
+                    ex.blocks.forEach(blk => {
+                         let c = 'gb-extra';
+                         if(blk[1] === 'sub') c = 'gb-subject';
+                         if(blk[1] === 'verb') c = 'gb-verb';
+                         if(blk[1] === 'obj') c = 'gb-object';
+                         if(blk[1] === 'op') c = 'gb-op';
+                         blocksHtml += `<span class="g-block ${c}">${blk[0]}</span>`;
+                    });
+                    
+                    exHtml += `
+                        <div class="mt-3 pt-3 border-t border-slate-50">
+                            <div class="mb-1">${blocksHtml}</div>
+                            <p class="text-xs text-slate-400 italic">${ex.pl}</p>
+                        </div>
+                    `;
+                });
+
+                el.innerHTML = `
+                    <h3 class="text-lg font-bold text-slate-800 mb-1">${topic.title}</h3>
+                    <p class="text-sm text-slate-500 mb-3 leading-snug">${topic.desc}</p>
+                    <div class="mb-2 text-xs uppercase font-bold text-slate-300">Konstrukcja:</div>
+                    <div class="mb-1">${structHtml}</div>
+                    ${exHtml}
+                `;
+                list.appendChild(el);
+            });
+        }
+
+        // --- SCRAMBLE LOGIC ---
         let scrambleState = { current: 0, words: [], userOrder: [] };
         
         function startScramble() {
@@ -441,7 +652,7 @@
             else { alert("Koniec układanki! Mistrz gramatyki."); switchTab('quiz'); }
         }
 
-        // --- SPEED MATCH LOGIC (NEW) ---
+        // --- SPEED MATCH LOGIC ---
         let matchState = { selected: null, matchesLeft: 6 };
         
         function startMemory() {
@@ -473,28 +684,19 @@
         }
 
         function handleMatchClick(el) {
-            // Ignore if fading out or already matched
             if(el.classList.contains('fade-out') || el.classList.contains('matched')) return;
-            
-            // If clicking same card, deselect
             if(matchState.selected === el) {
                 el.classList.remove('border-pink-500', 'bg-pink-50', 'text-pink-700');
                 matchState.selected = null;
                 return;
             }
-
-            // Highlight new selection
             el.classList.add('border-pink-500', 'bg-pink-50', 'text-pink-700');
 
             if(!matchState.selected) {
-                // First selection
                 matchState.selected = el;
             } else {
-                // Second selection - CHECK MATCH
                 const prev = matchState.selected;
-                
                 if(prev.dataset.id === el.dataset.id) {
-                    // MATCH!
                     prev.classList.replace('border-pink-500', 'border-green-500');
                     prev.classList.replace('bg-pink-50', 'bg-green-100');
                     prev.classList.replace('text-pink-700', 'text-green-800');
@@ -512,10 +714,8 @@
                         setTimeout(() => document.getElementById('memory-win').classList.remove('hidden'), 500);
                     }
                 } else {
-                    // NO MATCH
                     el.classList.add('wrong-anim', 'border-red-400', 'bg-red-50');
                     prev.classList.add('wrong-anim', 'border-red-400', 'bg-red-50');
-
                     setTimeout(() => {
                         el.classList.remove('wrong-anim', 'border-red-400', 'bg-red-50', 'border-pink-500', 'bg-pink-50', 'text-pink-700');
                         prev.classList.remove('wrong-anim', 'border-red-400', 'bg-red-50', 'border-pink-500', 'bg-pink-50', 'text-pink-700');
