@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Matura Cloud - Fix v7.6</title>
+    <title>Matura Cloud - Real Data v7.7</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet">
     
@@ -75,30 +75,31 @@
                 
                 <div class="mb-8">
                     <h2 class="text-2xl font-bold text-slate-800">Dzień dobry! ☀️</h2>
-                    <p class="text-slate-500">Oto Twój status przygotowań do matury.</p>
+                    <p class="text-slate-500">Oto Twój rzeczywisty status przygotowań.</p>
                 </div>
 
+                <!-- Stats Grid -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                     <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 dash-card">
                         <p class="text-xs text-slate-400 uppercase font-bold tracking-wider mb-1">Średni Wynik</p>
-                        <p class="text-2xl font-black text-indigo-600" id="stat-avg">72%</p>
+                        <p class="text-2xl font-black text-indigo-600" id="stat-avg">0%</p>
                     </div>
                     <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 dash-card">
                         <p class="text-xs text-slate-400 uppercase font-bold tracking-wider mb-1">Arkusze</p>
-                        <p class="text-2xl font-black text-slate-800" id="stat-sheets">4</p>
+                        <p class="text-2xl font-black text-slate-800" id="stat-sheets">0</p>
                     </div>
                     <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 dash-card">
                         <p class="text-xs text-slate-400 uppercase font-bold tracking-wider mb-1">Czas nauki</p>
-                        <p class="text-2xl font-black text-slate-800">2h 15m</p>
+                        <p class="text-2xl font-black text-slate-800" id="stat-time">0m</p>
                     </div>
                     <div class="bg-gradient-to-br from-indigo-600 to-violet-600 p-4 rounded-2xl shadow-md dash-card text-white">
-                        <p class="text-xs text-indigo-200 uppercase font-bold tracking-wider mb-1">Do poprawy</p>
-                        <p class="text-sm font-bold">Chemia: Kwasy 🧪</p>
-                        <button onclick="loadSheet('chemia')" class="mt-2 text-[10px] bg-white/20 hover:bg-white/30 px-2 py-1 rounded transition-colors">Rozwiąż teraz →</button>
+                        <p class="text-xs text-indigo-200 uppercase font-bold tracking-wider mb-1">Sugerowane</p>
+                        <p class="text-sm font-bold" id="stat-recommendation">Wybierz dowolny arkusz</p>
+                        <button id="recommendation-btn" onclick="loadSheet('polski')" class="mt-2 text-[10px] bg-white/20 hover:bg-white/30 px-2 py-1 rounded transition-colors">Rozpocznij →</button>
                     </div>
                 </div>
 
-                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Dostępne Arkusze</h3>
+                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Biblioteka Arkuszy</h3>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pb-10">
                     <button onclick="loadSheet('polski')" class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 hover:border-red-400 hover:shadow-md transition-all text-left group relative overflow-hidden">
@@ -108,7 +109,6 @@
                             <p class="text-xs text-slate-500 mt-1">Analiza tekstu: Lalka</p>
                             <div class="mt-4 flex items-center gap-2">
                                 <span class="text-[10px] font-bold text-red-600 bg-red-50 px-2 py-1 rounded">CKE 2023</span>
-                                <span class="text-[10px] text-slate-400">Ostatni wynik: 65%</span>
                             </div>
                         </div>
                     </button>
@@ -120,7 +120,6 @@
                             <p class="text-xs text-slate-500 mt-1">Funkcje, Geometria analityczna</p>
                             <div class="mt-4 flex items-center gap-2">
                                 <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">CKE 2024</span>
-                                <span class="text-[10px] text-slate-400">Ostatni wynik: 80%</span>
                             </div>
                         </div>
                     </button>
@@ -132,7 +131,6 @@
                             <p class="text-xs text-slate-500 mt-1">Reading Comprehension</p>
                             <div class="mt-4 flex items-center gap-2">
                                 <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">Pearson</span>
-                                <span class="text-[10px] text-slate-400">Ostatni wynik: 92%</span>
                             </div>
                         </div>
                     </button>
@@ -144,7 +142,6 @@
                             <p class="text-xs text-slate-500 mt-1">Kwasy, Stechiometria</p>
                             <div class="mt-4 flex items-center gap-2">
                                 <span class="text-[10px] font-bold text-teal-600 bg-teal-50 px-2 py-1 rounded">Nowy Arkusz</span>
-                                <span class="text-[10px] text-slate-400">Nie rozpoczęto</span>
                             </div>
                         </div>
                     </button>
@@ -205,7 +202,7 @@
                 </div>
                 
                 <h2 class="text-2xl font-bold text-slate-800 mt-6 mb-2">Arkusz Zakończony!</h2>
-                <p class="text-slate-500 text-sm mb-6">Oto wynik sesji.</p>
+                <p class="text-slate-500 text-sm mb-6">Oto wynik sesji. Zapisano w historii.</p>
                 
                 <div class="flex justify-center gap-4 mb-8">
                     <div class="text-center">
@@ -230,7 +227,7 @@
             </div>
         </div>
 
-        <!-- EXIT CONFIRMATION MODAL (NOWY) -->
+        <!-- EXIT CONFIRMATION MODAL -->
         <div id="exit-modal" class="hidden absolute inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
             <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center pop-up">
                 <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
@@ -257,27 +254,14 @@
                 source: `
                     <h2 class="font-bold text-2xl text-slate-900 mb-2 font-serif">Lalka (fragment)</h2>
                     <p class="text-sm text-slate-500 mb-6 italic">Bolesław Prus</p>
-                    
-                    <p class="mb-4 serif leading-relaxed">
-                        Wokulski spostrzegł, że panna Izabela patrzy na niego. Zrobiło mu się gorąco i – spuścił oczy.
-                        Gdy je podniósł, panna Izabela rozmawiała z prezesową, a panna Florentyna patrzyła na niego.
-                    </p>
-                    <p class="mb-4 serif leading-relaxed">
-                        – Głupi jestem! – pomyślał. – Wytworne damy nie jedzą tak łapczywie jak ja...
-                        W tej chwili uczuł, że mu coś zawadza w lewą rękę. Był to nóż, który nie wiedzieć kiedy
-                        wziął, choć rybę jada się samym widelcem.
-                    </p>
-                    <p class="mb-4 serif leading-relaxed">
-                        "Jaka ona piękna!... – myślał. – A ja jaki przy niej nędzny!... Co to za toaleta, jakie maniery...
-                        Wszystko, co ją otacza, jest piękne i łagodne, a ja jestem jak ten nóż, co kraje rybę...
-                        Ona nawet nie domyśla się, co się ze mną dzieje."
-                    </p>
+                    <p class="mb-4 serif leading-relaxed">Wokulski spostrzegł, że panna Izabela patrzy na niego. Zrobiło mu się gorąco i – spuścił oczy...</p>
+                    <p class="mb-4 serif leading-relaxed">"Jaka ona piękna!... – myślał. – A ja jaki przy niej nędzny!..."</p>
                 `,
                 tasks: [
-                    { id: 1, type: "radio", question: "Co jest głównym źródłem dyskomfortu Wokulskiego?", hint: "Zwróć uwagę na to, z kim się porównuje i jaki przedmiot trzyma.", options: ["Zbyt wysoka temperatura w sali.", "Świadomość własnych braków w etykiecie.", "Kłótnia z panną Florentyną.", "Niesmaczna ryba."], correct: 1, explanation: "Wokulski czuje się 'nędzny' przy arystokracji." },
-                    { id: 2, type: "radio", question: "Jakie znaczenie ma metafora 'jestem jak ten nóż'?", hint: "Nóż do ryby jest tu narzędziem niewłaściwym.", options: ["Wokulski czuje się ostry i niebezpieczny.", "Wokulski czuje się niepotrzebny i niepasujący do otoczenia.", "Wokulski jest metaliczny i zimny.", "Wokulski chce kogoś zranić."], correct: 1, explanation: "Porównanie do noża podkreśla jego poczucie bycia 'elementem obcym'." },
-                    { id: 3, type: "radio", question: "Jaki typ narracji dominuje w cytowanych fragmentach myśli bohatera?", hint: "Cudzysłowy i forma 'myślał'.", options: ["Narracja trzecioosobowa obiektywna.", "Mowa niezależna (monolog wewnętrzny).", "Mowa zależna.", "Narracja auktorialna."], correct: 1, explanation: "To monolog wewnętrzny (mowa niezależna)." },
-                    { id: 4, type: "radio", question: "Jak reaguje Izabela Łęcka na zachowanie Wokulskiego w tym fragmencie?", hint: "Przeczytaj ostatnie zdanie fragmentu.", options: ["Śmieje się z niego.", "Jest oburzona jego zachowaniem.", "Nie domyśla się jego przeżyć.", "Pociesza go wzrokiem."], correct: 2, explanation: "Wokulski stwierdza: 'Ona nawet nie domyśla się'." }
+                    { id: 1, type: "radio", question: "Co jest głównym źródłem dyskomfortu Wokulskiego?", hint: "Zwróć uwagę na porównanie.", options: ["Zbyt wysoka temperatura.", "Świadomość braków w etykiecie.", "Kłótnia.", "Niesmaczna ryba."], correct: 1, explanation: "Wokulski czuje się 'nędzny' przy arystokracji." },
+                    { id: 2, type: "radio", question: "Metafora 'jestem jak ten nóż' oznacza:", hint: "Nóż do ryby.", options: ["Jest ostry.", "Jest elementem obcym i niepasującym.", "Jest zimny.", "Jest niebezpieczny."], correct: 1, explanation: "Podkreśla jego niedopasowanie." },
+                    { id: 3, type: "radio", question: "Narracja w cytowanych myślach to:", hint: "Cudzysłowy.", options: ["Trzecioosobowa.", "Monolog wewnętrzny.", "Zależna.", "Auktorialna."], correct: 1, explanation: "To mowa niezależna." },
+                    { id: 4, type: "radio", question: "Reakcja Izabeli:", hint: "Ostatnie zdanie.", options: ["Śmiech.", "Oburzenie.", "Nieświadomość.", "Pocieszenie."], correct: 2, explanation: "Ona się nie domyśla." }
                 ]
             },
             matematyka: {
@@ -287,17 +271,12 @@
                 source: `
                     <h2 class="font-bold text-2xl text-slate-900 mb-6">Funkcja Kwadratowa</h2>
                     <p class="mb-4">Analizujemy funkcję: $$f(x) = -x^2 + 4x + 5$$</p>
-                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 text-sm mb-4 text-slate-700">
-                        <strong>Wzory:</strong><br>
-                        Współrzędna $p$ wierzchołka: $$p = \\frac{-b}{2a}$$<br>
-                        Wyróżnik trójmianu (Delta): $$\\Delta = b^2 - 4ac$$
-                    </div>
                 `,
                 tasks: [
-                    { id: 1, type: "radio", question: "Wyznacz pierwszą współrzędną wierzchołka (p).", hint: "Użyj wzoru $p = -b / 2a$. Tutaj $a = -1$, $b = 4$.", options: ["2", "-2", "4", "-4"], correct: 0, explanation: "$p = \\frac{-4}{2 \\cdot (-1)} = 2$." },
-                    { id: 2, type: "radio", question: "Zadanie 2. Ramiona paraboli skierowane są:", hint: "Spójrz na współczynnik $a$.", options: ["W górę", "W dół", "W lewo", "W prawo"], correct: 1, explanation: "Współczynnik $a = -1$ (ujemny) -> ramiona w dół." },
-                    { id: 3, type: "radio", question: "Jaka jest największa wartość tej funkcji (q)?", hint: "Oblicz $f(p)$, czyli $f(2)$.", options: ["5", "9", "4", "-1"], correct: 1, explanation: "$q = f(2) = -(2)^2 + 4(2) + 5 = 9$." },
-                    { id: 4, type: "radio", question: "Ile miejsc zerowych ma ta funkcja?", hint: "Oblicz deltę.", options: ["0", "1", "2", "Nieskończenie wiele"], correct: 2, explanation: "$\\Delta = 36 > 0$, więc 2 miejsca zerowe." }
+                    { id: 1, type: "radio", question: "Współrzędna p wierzchołka:", hint: "$p=-b/2a$", options: ["2", "-2", "4", "-4"], correct: 0, explanation: "$p = -4 / -2 = 2$." },
+                    { id: 2, type: "radio", question: "Ramiona paraboli:", hint: "Współczynnik a.", options: ["W górę", "W dół", "W lewo", "W prawo"], correct: 1, explanation: "$a < 0$, ramiona w dół." },
+                    { id: 3, type: "radio", question: "Największa wartość (q):", hint: "$f(p)$", options: ["5", "9", "4", "-1"], correct: 1, explanation: "$f(2) = 9$." },
+                    { id: 4, type: "radio", question: "Liczba miejsc zerowych:", hint: "Delta.", options: ["0", "1", "2", "Wiele"], correct: 2, explanation: "Delta dodatnia." }
                 ]
             },
             angielski: {
@@ -306,19 +285,13 @@
                 theme: "indigo",
                 source: `
                     <h2 class="font-bold text-2xl text-slate-900 mb-4">Remote Work</h2>
-                    <p class="mb-4 leading-relaxed">
-                        Remote work has become the standard. However, employees report feelings of isolation. 
-                        "Home Office" sounds convenient, but it requires immense self-discipline.
-                    </p>
-                    <p class="mb-4 leading-relaxed">
-                        Studies show that productivity often increases, but creativity might suffer due to the lack of spontaneous interactions.
-                    </p>
+                    <p class="mb-4 leading-relaxed">Remote work has become standard. It requires immense self-discipline.</p>
                 `,
                 tasks: [
-                    { id: 1, type: "radio", question: "According to the text, working from home:", hint: "Look for 'requires'.", options: ["Is easy.", "Demands strong self-discipline.", "Is only for freelancers.", "Causes happiness."], correct: 1, explanation: "Tekst mówi: 'requires immense self-discipline'." },
-                    { id: 2, type: "radio", question: "What might decrease during remote work?", options: ["Productivity.", "Isolation.", "Creativity.", "Salary."], correct: 2, explanation: "Tekst wspomina: 'creativity might suffer'." },
-                    { id: 3, type: "radio", question: "The word 'immense' means:", hint: "Something very big.", options: ["Tiny.", "Average.", "Huge/Enormous.", "Scary."], correct: 2, explanation: "Immense = huge." },
-                    { id: 4, type: "radio", question: "Why might creativity suffer?", hint: "Lack of something.", options: ["Laziness.", "Lack of interactions.", "Slow internet.", "Meetings."], correct: 1, explanation: "'lack of spontaneous interactions'." }
+                    { id: 1, type: "radio", question: "Working from home:", hint: "Requires what?", options: ["Is easy.", "Demands discipline.", "Only freelancers.", "Fun."], correct: 1, explanation: "Text says 'requires immense self-discipline'." },
+                    { id: 2, type: "radio", question: "What decreases?", options: ["Productivity.", "Isolation.", "Creativity.", "Salary."], correct: 2, explanation: "Creativity might suffer." },
+                    { id: 3, type: "radio", question: "Immense means:", hint: "Size.", options: ["Tiny.", "Average.", "Huge.", "Scary."], correct: 2, explanation: "Immense = huge." },
+                    { id: 4, type: "radio", question: "Why creativity suffers?", hint: "Interactions.", options: ["Laziness.", "Lack of interactions.", "Internet.", "Meetings."], correct: 1, explanation: "Lack of spontaneous interactions." }
                 ]
             },
             chemia: {
@@ -327,26 +300,29 @@
                 theme: "teal",
                 source: `
                     <h2 class="font-bold text-2xl text-slate-900 mb-4">Kwasy Tlenowe</h2>
-                    <p class="mb-4">Otrzymywanie kwasu siarkowego(VI) $H_2SO_4$.</p>
-                    <div class="bg-teal-50 p-4 rounded-xl border border-teal-100 text-sm mb-6 text-slate-700">
-                        $$SO_3 + H_2O \\rightarrow H_2SO_4$$
-                    </div>
-                    <ul class="list-disc pl-5 text-sm space-y-1 mb-6">
-                        <li>Silnie higroskopijny.</li>
-                        <li>Stężony zwęgla substancje organiczne.</li>
-                        <li>Egzotermiczne rozcieńczanie.</li>
-                    </ul>
+                    <p class="mb-4">Otrzymywanie $H_2SO_4$.</p>
+                    <div class="bg-teal-50 p-4 rounded text-center">$$SO_3 + H_2O \\rightarrow H_2SO_4$$</div>
                 `,
                 tasks: [
-                    { id: 1, type: "radio", question: "Jaki tlenek jest bezwodnikiem kwasu siarkowego(VI)?", hint: "Lewa strona równania.", options: ["$SO_2$", "$SO_3$", "$S_2O$", "$H_2O$"], correct: 1, explanation: "Bezwodnikiem jest $SO_3$." },
-                    { id: 2, type: "radio", question: "Zasada rozcieńczania:", hint: "Woda czy kwas?", options: ["Kwas do wody.", "Woda do kwasu.", "Obojętne.", "Szybko wlać."], correct: 0, explanation: "Pamiętaj chemiku młody, wlewaj zawsze kwas do wody." },
-                    { id: 3, type: "radio", question: "Wartość pH roztworu kwasu wynosi:", hint: "Odczyn kwasowy.", options: ["pH > 7", "pH = 7", "pH < 7", "pH = 14"], correct: 2, explanation: "Kwasy mają pH < 7." },
-                    { id: 4, type: "radio", question: "Jon odpowiadający za odczyn kwasowy:", hint: "Produkt dysocjacji.", options: ["$OH^-$", "$H^+$", "$SO_4^{2-}$", "$Cl^-$"], correct: 1, explanation: "To kation wodoru $H^+$." }
+                    { id: 1, type: "radio", question: "Bezwodnik kwasu siarkowego(VI):", hint: "Substrat.", options: ["$SO_2$", "$SO_3$", "$S_2O$", "$H_2O$"], correct: 1, explanation: "$SO_3$." },
+                    { id: 2, type: "radio", question: "Rozcieńczanie:", hint: "Zasada BHP.", options: ["Kwas do wody.", "Woda do kwasu.", "Obojętne.", "Szybko."], correct: 0, explanation: "Pamiętaj chemiku młody..." },
+                    { id: 3, type: "radio", question: "pH roztworu kwasu:", hint: "Odczyn.", options: [">7", "7", "<7", "14"], correct: 2, explanation: "Kwas < 7." },
+                    { id: 4, type: "radio", question: "Jon kwasowy:", hint: "Kation.", options: ["$OH^-$", "$H^+$", "$SO_4^{2-}$", "$Cl^-$"], correct: 1, explanation: "Kation wodoru." }
                 ]
             }
         };
 
-        // --- ENGINE ---
+        // --- STATE MANAGEMENT ---
+        let userProgress = {
+            totalScoreSum: 0,
+            sheetsCount: 0,
+            totalTimeSec: 0,
+            lastSubject: null
+        };
+
+        const STORAGE_KEY = 'matura_cloud_progress_v7';
+
+        // --- DOM ---
         const dom = {
             home: document.getElementById('view-home'),
             sheet: document.getElementById('view-sheet'),
@@ -360,18 +336,66 @@
             exitModal: document.getElementById('exit-modal'),
             finalScore: document.getElementById('final-score'),
             finalTime: document.getElementById('final-time'),
-            finalFeedback: document.getElementById('final-feedback')
+            finalFeedback: document.getElementById('final-feedback'),
+            // Stats
+            statAvg: document.getElementById('stat-avg'),
+            statSheets: document.getElementById('stat-sheets'),
+            statTime: document.getElementById('stat-time'),
+            statRecText: document.getElementById('stat-recommendation'),
+            statRecBtn: document.getElementById('recommendation-btn')
         };
 
         let timerInterval;
         let activeTasks = [];
+        let activeSubjectKey = '';
         let sessionStats = { total: 0, answered: 0, correct: 0 };
-        let userProgress = { avgScore: 72, sheetsCount: 4, streak: 3 };
 
+        // --- INIT ---
+        function init() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                userProgress = JSON.parse(saved);
+            }
+            updateDashboardUI();
+        }
+
+        // --- DASHBOARD LOGIC ---
+        function updateDashboardUI() {
+            // Avg Score
+            const avg = userProgress.sheetsCount > 0 
+                ? Math.round(userProgress.totalScoreSum / userProgress.sheetsCount) 
+                : 0;
+            dom.statAvg.textContent = `${avg}%`;
+            
+            // Sheets
+            dom.statSheets.textContent = userProgress.sheetsCount;
+            
+            // Time
+            const h = Math.floor(userProgress.totalTimeSec / 3600);
+            const m = Math.floor((userProgress.totalTimeSec % 3600) / 60);
+            dom.statTime.textContent = h > 0 ? `${h}h ${m}m` : `${m}m`;
+
+            // Recommendation
+            if (userProgress.lastSubject) {
+                dom.statRecText.textContent = `Powtórz: ${CKE_DATA[userProgress.lastSubject].subject}`;
+                dom.statRecBtn.setAttribute('onclick', `loadSheet('${userProgress.lastSubject}')`);
+                dom.statRecBtn.textContent = "Spróbuj ponownie →";
+            } else {
+                dom.statRecText.textContent = "Wybierz dowolny arkusz";
+                dom.statRecBtn.setAttribute('onclick', "loadSheet('matematyka')"); // Default
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(userProgress));
+        }
+
+        // --- SHEET LOGIC ---
         function loadSheet(key) {
             const data = CKE_DATA[key];
             if (!data) return;
-
+            
+            activeSubjectKey = key;
             dom.home.classList.add('hidden');
             dom.sheet.classList.remove('hidden');
             dom.sheetTitle.textContent = data.title;
@@ -451,7 +475,26 @@
         function finishSheet() {
             stopTimer();
             const percent = Math.round((sessionStats.correct / sessionStats.total) * 100) || 0;
+            
+            // --- STATE UPDATE ---
             userProgress.sheetsCount++;
+            userProgress.totalScoreSum += percent;
+            
+            // Parse time from "00:00" to seconds
+            const [mm, ss] = dom.timer.textContent.split(':').map(Number);
+            const sheetSeconds = mm * 60 + ss;
+            userProgress.totalTimeSec += sheetSeconds;
+
+            // Recommendation Logic
+            if (percent < 50) {
+                userProgress.lastSubject = activeSubjectKey; // Recommend if failed
+            } else {
+                // If passed well, maybe clear recommendation or rotate (kept simple here)
+                // userProgress.lastSubject = null; 
+            }
+            saveState();
+            // --------------------
+
             dom.finalScore.textContent = `${sessionStats.correct}/${sessionStats.total}`;
             dom.finalTime.textContent = dom.timer.textContent;
             
@@ -461,12 +504,13 @@
             else dom.finalFeedback.textContent = "Przeczytaj tekst źródłowy jeszcze raz.";
 
             dom.summaryModal.classList.remove('hidden');
-            document.getElementById('stat-sheets').textContent = userProgress.sheetsCount;
         }
 
-        function closeSummary() { dom.summaryModal.classList.add('hidden'); goHome(); }
+        function closeSummary() { 
+            dom.summaryModal.classList.add('hidden'); 
+            goHome(); 
+        }
 
-        // --- EXIT LOGIC (Fixed) ---
         function openExitModal() { dom.exitModal.classList.remove('hidden'); }
         function closeExitModal() { dom.exitModal.classList.add('hidden'); }
         function confirmExitAction() { closeExitModal(); goHome(); }
@@ -475,6 +519,7 @@
             dom.sheet.classList.add('hidden');
             dom.home.classList.remove('hidden');
             stopTimer();
+            updateDashboardUI(); // Refresh stats view
         }
 
         function startTimer() {
@@ -490,6 +535,9 @@
         }
 
         function stopTimer() { if (timerInterval) clearInterval(timerInterval); }
+
+        // Start App
+        init();
 
     </script>
 </body>
