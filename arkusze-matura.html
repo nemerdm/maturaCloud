@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Matura Cloud - Dynamic v8.3</title>
+    <title>Matura Cloud - Dynamic v8.4 (Mobile Fix)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet">
     
@@ -28,29 +28,32 @@
     <style>
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         .serif { font-family: 'Merriweather', serif; }
+        
+        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 4px; }
         .dark ::-webkit-scrollbar-thumb { background-color: #475569; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
+
         .fade-in { animation: fadeIn 0.3s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         .pop-up { animation: popUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes popUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .sheet-split { display: flex; flex-direction: column; height: 100%; }
-        @media (min-width: 768px) { .sheet-split { flex-direction: row; } }
-        .source-text { flex: 1; overflow-y: auto; }
-        .questions-panel { flex: 1; overflow-y: auto; }
-        * { transition: background-color 0.3s, border-color 0.3s, color 0.3s; }
-        .dash-card:hover { transform: translateY(-2px); transition: transform 0.2s; }
         
+        /* Layout Utilities */
+        .dash-card:hover { transform: translateY(-2px); transition: transform 0.2s; }
+        * { transition: background-color 0.3s, border-color 0.3s, color 0.3s; }
+
         /* Audio Wave Animation */
         .wave-bar { width: 6px; background-color: #6366f1; border-radius: 99px; animation: wave 1s ease-in-out infinite; }
         @keyframes wave { 0%, 100% { height: 10px; } 50% { height: 40px; } }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 dark:bg-dark-bg dark:text-dark-text h-screen flex flex-col overflow-hidden transition-colors duration-300">
+<!-- UPDATED: h-[100dvh] for mobile browser address bar handling -->
+<body class="bg-slate-50 text-slate-800 dark:bg-dark-bg dark:text-dark-text h-[100dvh] flex flex-col overflow-hidden transition-colors duration-300">
 
-    <!-- HEADER -->
+    <!-- HEADER (App Level) -->
     <header class="bg-white dark:bg-dark-card shadow-sm z-30 flex-none border-b border-slate-200 dark:border-dark-border">
         <div class="w-full px-4 py-3 flex justify-between items-center">
             <div onclick="goHome()" class="cursor-pointer flex items-center gap-3">
@@ -74,12 +77,12 @@
         </div>
     </header>
 
-    <!-- MAIN -->
+    <!-- MAIN CONTAINER -->
     <main class="flex-1 overflow-hidden relative w-full h-full">
         
-        <!-- DASHBOARD -->
+        <!-- DASHBOARD (Scrollable independently) -->
         <div id="view-home" class="absolute inset-0 z-20 bg-slate-50 dark:bg-dark-bg p-4 md:p-8 overflow-y-auto">
-            <div class="max-w-5xl mx-auto">
+            <div class="max-w-5xl mx-auto pb-20"> <!-- Added padding bottom -->
                 <div class="mb-8 flex justify-between items-end">
                     <div>
                         <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Witaj, Piotr! 👋</h2>
@@ -112,16 +115,16 @@
                     <button onclick="filterContent('sheet')" id="tab-sheet" class="px-4 py-2 bg-white dark:bg-dark-card text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-dark-border rounded-full text-sm font-medium hover:bg-slate-50 transition-colors tab-btn">Arkusze</button>
                 </div>
 
-                <!-- Content Grid (Generated Dynamically) -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-20" id="content-grid">
+                <!-- Content Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="content-grid">
                     <!-- Javascript will inject content here -->
                 </div>
             </div>
         </div>
 
         <!-- ORAL EXAM -->
-        <div id="view-oral" class="absolute inset-0 z-30 bg-white dark:bg-dark-bg hidden flex flex-col items-center justify-center p-6 text-center">
-            <div class="max-w-md w-full h-full overflow-y-auto pb-10 flex flex-col justify-center">
+        <div id="view-oral" class="absolute inset-0 z-30 bg-white dark:bg-dark-bg hidden flex flex-col items-center justify-center p-6 text-center overflow-y-auto">
+            <div class="max-w-md w-full min-h-full flex flex-col justify-center py-10">
                 
                 <!-- PHASE 1: QUESTION -->
                 <div id="oral-phase-1">
@@ -139,7 +142,6 @@
                         </div>
                         <p id="rec-status" class="text-slate-400 text-sm font-mono mb-4">Naciśnij, aby rozpocząć odpowiedź</p>
                         <p id="rec-timer" class="text-4xl font-black text-slate-800 dark:text-white hidden">00:00</p>
-                        <!-- Fake Wave -->
                         <div id="wave-container" class="hidden flex gap-1 h-10 items-center justify-center mt-4">
                             <div class="wave-bar" style="animation-delay: 0s"></div>
                             <div class="wave-bar" style="animation-delay: 0.1s"></div>
@@ -158,7 +160,7 @@
                 </div>
 
                 <!-- PHASE 3: SELF-CHECK -->
-                <div id="oral-phase-3" class="hidden text-left pop-up">
+                <div id="oral-phase-3" class="hidden text-left pop-up pb-10">
                     <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Samoocena</h3>
                     <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Bądź uczciwy. Zaznacz punkty, które poruszyłeś w swojej wypowiedzi.</p>
                     <div class="space-y-3 mb-6" id="oral-checklist"></div>
@@ -173,43 +175,60 @@
             </div>
         </div>
 
-        <!-- SHEET VIEW -->
-        <div id="view-sheet" class="absolute inset-0 z-10 bg-white dark:bg-dark-bg hidden flex flex-col h-full">
-            <div class="bg-white dark:bg-dark-card border-b border-slate-200 dark:border-dark-border px-4 py-2 flex justify-between items-center text-xs font-medium text-slate-500 shadow-sm z-20">
+        <!-- SHEET VIEW (COMPLETELY REBUILT FOR MOBILE) -->
+        <!-- Fixed positioning with flex column layout ensures footer is always visible -->
+        <div id="view-sheet" class="fixed inset-0 z-50 bg-white dark:bg-dark-bg hidden flex flex-col h-[100dvh] w-full">
+            
+            <!-- 1. HEADER (Fixed Top) -->
+            <div class="flex-none bg-white dark:bg-dark-card border-b border-slate-200 dark:border-dark-border px-4 py-3 flex justify-between items-center text-xs font-medium text-slate-500 shadow-sm z-20">
                 <div class="flex items-center gap-3">
                     <button onclick="openExitModal()" class="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 hover:bg-red-50 hover:text-red-600 dark:hover:text-red-400 transition-colors">✕</button>
-                    <div class="flex items-center gap-2">
-                        <span id="sheet-subject-tag" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">PREDM</span>
-                        <span id="sheet-title" class="truncate max-w-[150px] md:max-w-xs font-bold text-slate-700 dark:text-slate-200">Arkusz</span>
+                    <div class="flex items-center gap-2 overflow-hidden">
+                        <span id="sheet-subject-tag" class="shrink-0 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">PREDM</span>
+                        <span id="sheet-title" class="truncate font-bold text-slate-700 dark:text-slate-200 max-w-[120px] md:max-w-xs">Arkusz</span>
                     </div>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 shrink-0">
                     <span class="hidden md:inline text-[10px] uppercase tracking-wider text-slate-400">Czas:</span>
                     <span id="timer" class="font-mono bg-slate-100 dark:bg-slate-700 dark:text-slate-300 px-2 py-1 rounded text-slate-700">00:00</span>
                 </div>
             </div>
-            <div class="flex-1 overflow-hidden relative">
-                <div class="sheet-split h-full">
-                    <div class="source-text bg-white dark:bg-dark-bg p-6 md:p-10 custom-scrollbar border-b md:border-b-0 md:border-r border-slate-200 dark:border-dark-border">
+
+            <!-- 2. CONTENT (Flexible Middle Area) -->
+            <div class="flex-1 overflow-hidden relative w-full">
+                <!-- Mobile: Flex Column (Split Screen), Desktop: Flex Row -->
+                <div class="flex flex-col md:flex-row h-full w-full">
+                    
+                    <!-- Source Text: 35% height on mobile, full height 50% width on desktop -->
+                    <div class="source-text bg-white dark:bg-dark-bg p-6 md:p-10 custom-scrollbar border-b-4 border-slate-100 md:border-b-0 md:border-r border-slate-200 dark:border-dark-border overflow-y-auto h-[35%] md:h-full md:flex-1 md:w-1/2">
+                        <div class="sticky top-0 bg-white dark:bg-dark-bg z-10 pb-2 mb-2 border-b border-slate-100 dark:border-dark-border md:hidden">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tekst Źródłowy</span>
+                        </div>
                         <div id="source-content" class="prose prose-sm md:prose-base max-w-none text-slate-700 dark:text-slate-300"></div>
                     </div>
-                    <div class="questions-panel bg-slate-50 dark:bg-dark-card p-4 md:p-8 custom-scrollbar">
-                        <div class="flex justify-between items-center mb-4">
+                    
+                    <!-- Questions: Remaining height (flex-1) on mobile, full height 50% width on desktop -->
+                    <div class="questions-panel bg-slate-50 dark:bg-dark-card p-4 md:p-8 custom-scrollbar overflow-y-auto flex-1 md:h-full md:w-1/2">
+                        <div class="flex justify-between items-center mb-4 sticky top-0 bg-slate-50 dark:bg-dark-card z-10 py-2">
                             <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Zadania</h3>
                             <span class="text-xs text-slate-400" id="progress-indicator">0/0</span>
                         </div>
-                        <div id="questions-list" class="space-y-6"></div>
-                        <div class="h-24"></div>
+                        <div id="questions-list" class="space-y-6 pb-4"></div>
                     </div>
                 </div>
             </div>
-            <div class="absolute bottom-0 left-0 right-0 p-4 bg-white/90 dark:bg-dark-card/90 backdrop-blur-sm border-t border-slate-200 dark:border-dark-border z-30 flex justify-between items-center md:justify-end">
-                <button onclick="finishSheet()" class="bg-slate-900 dark:bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-slate-700 dark:hover:bg-indigo-500 transition-colors shadow-lg active:scale-95 w-full md:w-auto">Zakończ i Sprawdź ➜</button>
+
+            <!-- 3. FOOTER (Fixed Bottom) -->
+            <div class="flex-none p-4 bg-white dark:bg-dark-card border-t border-slate-200 dark:border-dark-border z-30 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+                <button onclick="finishSheet()" class="w-full bg-slate-900 dark:bg-indigo-600 text-white py-3.5 rounded-xl font-bold text-sm hover:bg-slate-700 dark:hover:bg-indigo-500 transition-colors shadow-lg active:scale-95 flex items-center justify-center gap-2">
+                    <span>Zakończ i Sprawdź</span>
+                    <span>➜</span>
+                </button>
             </div>
         </div>
 
         <!-- MODALS -->
-        <div id="exit-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div id="exit-modal" class="hidden fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
             <div class="bg-white dark:bg-dark-card w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center pop-up">
                 <div class="w-12 h-12 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center text-2xl mx-auto mb-4">⚠️</div>
                 <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-2">Przerwać?</h3>
@@ -221,7 +240,7 @@
             </div>
         </div>
 
-        <div id="summary-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div id="summary-modal" class="hidden fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
             <div class="bg-white dark:bg-dark-card w-full max-w-sm rounded-3xl shadow-2xl p-8 text-center pop-up relative">
                 <h2 class="text-2xl font-bold text-slate-800 dark:text-white mt-4 mb-2">Arkusz Zakończony!</h2>
                 <div class="flex justify-center gap-4 mb-8 mt-6">
@@ -233,7 +252,8 @@
             </div>
         </div>
 
-        <div id="ai-modal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-end md:items-center justify-center p-4">
+        <!-- AI CHAT MODAL -->
+        <div id="ai-modal" class="hidden fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm flex items-end md:items-center justify-center p-4">
             <div class="bg-white dark:bg-dark-card w-full max-w-md h-[500px] rounded-t-2xl md:rounded-3xl shadow-2xl flex flex-col pop-up overflow-hidden">
                 <div class="bg-indigo-600 p-4 flex justify-between items-center text-white">
                     <div class="flex items-center gap-3"><div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center text-lg">🤖</div><h3 class="font-bold text-sm">AI Tutor</h3></div>
@@ -257,54 +277,54 @@
             polski: {
                 id: 'polski', title: "Lalka - Analiza", subject: "Polski", theme: "red", icon: "🇵🇱",
                 desc: "Lektury: Lalka, Prus", label: "CKE 2023",
-                source: `<h2 class='font-bold text-2xl mb-4 text-slate-900 dark:text-white'>Lalka</h2><p class='text-slate-700 dark:text-slate-300 leading-relaxed'>Wokulski spostrzegł, że panna Izabela patrzy na niego...</p>`,
-                tasks: [{ id: 1, type: "radio", question: "Źródło dyskomfortu?", options: ["Temperatura", "Braki w etykiecie", "Ryba"], correct: 1, explanation: "Wokulski czuje się gorszy." }]
+                source: `<h2 class='font-bold text-2xl mb-4 text-slate-900 dark:text-white'>Lalka</h2><p class='text-slate-700 dark:text-slate-300 leading-relaxed'>Wokulski spostrzegł, że panna Izabela patrzy na niego z wyrazem, którego nie mógł zrozumieć. Było to połączenie ciekawości z pewną dozą wyższości. Sala balowa lśniła od świateł, a muzyka zdawała się zagłuszać jego własne myśli. <br><br> Czuł się obco w tym towarzystwie, mimo swojego majątku. Jego czerwone dłonie, pamiątka po latach ciężkiej pracy i syberyjskich mrozach, zdawały się parzyć go w białych rękawiczkach. Wszystko tutaj było teatrem, a on jedynym widzem, który zapłacił za bilet o wiele za dużo.</p>`,
+                tasks: [{ id: 1, type: "radio", question: "Co jest głównym źródłem dyskomfortu Wokulskiego w tej scenie?", options: ["Wysoka temperatura w sali", "Poczucie niższości klasowej i braki w etykiecie", "Nieświeża ryba na obiedzie"], correct: 1, explanation: "Wokulski czuje się gorszy ze względu na swoje pochodzenie kupieckie w zderzeniu z arystokracją." }]
             },
             matematyka: {
                 id: 'matematyka', title: "Funkcje", subject: "Matematyka", theme: "blue", icon: "📐",
                 desc: "Funkcje kwadratowe", label: "CKE 2024",
-                source: `<h2 class='font-bold text-2xl mb-4 text-slate-900 dark:text-white'>Funkcja</h2><p class='text-slate-700 dark:text-slate-300'>$$f(x) = -x^2 + 4x + 5$$</p>`,
-                tasks: [{ id: 1, type: "radio", question: "Współrzędna p?", options: ["2", "-2", "4"], correct: 0, explanation: "$p=2$." }]
+                source: `<h2 class='font-bold text-2xl mb-4 text-slate-900 dark:text-white'>Zadanie - Funkcja</h2><p class='text-slate-700 dark:text-slate-300'>Dana jest funkcja kwadratowa określona wzorem:</p><p class='my-4 text-xl font-mono text-center'>$$f(x) = -x^2 + 4x + 5$$</p><p>Osią symetrii paraboli będącej wykresem tej funkcji jest prosta o równaniu $x = p$.</p>`,
+                tasks: [{ id: 1, type: "radio", question: "Współrzędna p wierzchołka paraboli wynosi:", options: ["2", "-2", "4"], correct: 0, explanation: "Wzór na $p = -b/2a$. Tutaj $p = -4 / (2 * -1) = -4 / -2 = 2$." }]
             },
             angielski: {
                 id: 'angielski', title: "Reading", subject: "Angielski", theme: "indigo", icon: "🇬🇧",
                 desc: "Remote Work Analysis", label: "Pearson",
-                source: `<h2 class='font-bold text-2xl mb-4 text-slate-900 dark:text-white'>Remote Work</h2><p class='text-slate-700 dark:text-slate-300'>Remote work requires discipline.</p>`,
-                tasks: [{ id: 1, type: "radio", question: "Requires what?", options: ["Money", "Discipline", "Time"], correct: 1, explanation: "Self-discipline." }]
+                source: `<h2 class='font-bold text-2xl mb-4 text-slate-900 dark:text-white'>Remote Work</h2><p class='text-slate-700 dark:text-slate-300'>Remote work offers flexibility but requires significant self-discipline. Employees often struggle with separating their professional and private lives when their home becomes their office. However, studies show that productivity can actually increase in a remote setting if proper boundaries are established.</p>`,
+                tasks: [{ id: 1, type: "radio", question: "According to the text, successful remote work requires:", options: ["More money", "Self-discipline", "More time"], correct: 1, explanation: "The text states it 'requires significant self-discipline'." }]
             },
             chemia: {
                 id: 'chemia', title: "Kwasy", subject: "Chemia", theme: "teal", icon: "🧪",
                 desc: "Kwasy Tlenowe", label: "Nowy Arkusz",
-                source: `<h2 class='font-bold text-2xl mb-4 text-slate-900 dark:text-white'>H2SO4</h2><p class='text-slate-700 dark:text-slate-300'>$$SO_3 + H_2O \\rightarrow H_2SO_4$$</p>`,
-                tasks: [{ id: 1, type: "radio", question: "Bezwodnik?", options: ["SO2", "SO3"], correct: 1, explanation: "SO3." }]
+                source: `<h2 class='font-bold text-2xl mb-4 text-slate-900 dark:text-white'>Otrzymywanie H2SO4</h2><p class='text-slate-700 dark:text-slate-300'>Kwas siarkowy(VI) można otrzymać w reakcji tlenku kwasowego z wodą:</p><p class='my-4 text-xl font-mono text-center'>$$SO_3 + H_2O \\rightarrow H_2SO_4$$</p>`,
+                tasks: [{ id: 1, type: "radio", question: "Który tlenek jest bezwodnikiem kwasu siarkowego(VI)?", options: ["SO2", "SO3"], correct: 1, explanation: "SO3 to tlenek siarki(VI), bezwodnik H2SO4." }]
             },
             biologia: {
                 id: 'biologia', title: "Genetyka", subject: "Biologia", theme: "green", icon: "🧬",
                 desc: "Krzyżówki Genetyczne", label: "Wykresy",
-                source: `<h2 class='font-bold text-2xl mb-4 text-slate-900 dark:text-white'>Genetyka</h2><div class='bg-slate-100 dark:bg-slate-800 p-4 rounded text-center'>P: Aa x Aa</div>`,
-                tasks: [{ id: 1, type: "radio", question: "Prawdopodobieństwo aa:", options: ["25%", "50%", "75%"], correct: 0, explanation: "25% szans." }]
+                source: `<h2 class='font-bold text-2xl mb-4 text-slate-900 dark:text-white'>Dziedziczenie</h2><div class='bg-slate-100 dark:bg-slate-800 p-4 rounded text-center mb-4'>Rodzice są heterozygotami: Aa x Aa</div><p>Cecha A (ciemne oczy) dominuje nad cechą a (jasne oczy).</p>`,
+                tasks: [{ id: 1, type: "radio", question: "Jakie jest prawdopodobieństwo urodzenia dziecka o jasnych oczach (aa)?", options: ["25%", "50%", "75%"], correct: 0, explanation: "Rozkład genotypów: AA (25%), Aa (50%), aa (25%)." }]
             },
             geografia: {
                 id: 'geografia', title: "Tektonika", subject: "Geografia", theme: "yellow", icon: "🌍",
                 desc: "Płyty Tektoniczne", label: "Mapy",
-                source: `<h2 class='font-bold text-2xl mb-4 text-slate-900 dark:text-white'>Płyty</h2><p>Ruchy płyt...</p>`,
-                tasks: [{ id: 1, type: "radio", question: "Gdzie trzęsienia?", options: ["Środek", "Granice"], correct: 1, explanation: "Na stykach." }]
+                source: `<h2 class='font-bold text-2xl mb-4 text-slate-900 dark:text-white'>Ruchy Płyt</h2><p>Litosfera podzielona jest na płyty tektoniczne, które przemieszczają się względem siebie. Trzęsienia ziemi występują najczęściej na granicach tych płyt.</p>`,
+                tasks: [{ id: 1, type: "radio", question: "Gdzie najczęściej występują trzęsienia ziemi?", options: ["W środku płyt", "Na granicach płyt"], correct: 1, explanation: "Aktywność sejsmiczna jest największa na stykach płyt litosfery." }]
             },
             // ORAL EXAM DATA
             oral_makbet: {
                 question: "Motyw winy i kary w literaturze. Omów zagadnienie na podstawie 'Makbeta'.",
                 criteria: [
-                    "Zdefiniowanie zbrodni Makbeta jako złamania praw boskich.",
-                    "Przywołanie roli Lady Makbet.",
-                    "Wspomnienie o wyrzutach sumienia (omamy, lunatykowanie).",
-                    "Kontekst innego utworu (np. Balladyna, Zbrodnia i Kara).",
-                    "Poprawność językowa i spójność wypowiedzi."
+                    "Zdefiniowanie zbrodni Makbeta jako złamania praw boskich i moralnych.",
+                    "Przywołanie roli Lady Makbet jako inicjatorki zła.",
+                    "Wspomnienie o objawach wyrzutów sumienia (omamy, lunatykowanie, krew na rękach).",
+                    "Kontekst innego utworu (np. Balladyna, Zbrodnia i Kara, Dziady cz. II).",
+                    "Poprawność językowa, styl i spójność wypowiedzi."
                 ]
             }
         };
 
         // --- STATE ---
-        const STORAGE_KEY = 'matura_cloud_v8_3_fresh'; // Changed key for fresh start
+        const STORAGE_KEY = 'matura_cloud_v8_4_mobile';
         let userProgress = { totalScoreSum: 0, sheetsCount: 0, scoresBySubject: {}, attemptsBySubject: {}, streak: 1, lastLogin: new Date().toDateString() };
 
         // --- DOM ---
@@ -358,7 +378,7 @@
                 if (userProgress.lastLogin === yesterday.toDateString()) {
                     userProgress.streak++;
                 } else {
-                    userProgress.streak = 1; // Gap detected or first login logic adjust
+                    userProgress.streak = 1; 
                 }
                 userProgress.lastLogin = today;
                 saveState();
@@ -375,7 +395,7 @@
 
         function renderDashboardContent() {
             const grid = dom.contentGrid;
-            grid.innerHTML = ''; // Clear
+            grid.innerHTML = ''; 
 
             // 1. Add Oral Exam Card (Static)
             grid.innerHTML += `
@@ -419,7 +439,6 @@
             
             // Adaptive Logic
             let worst = null, min = 101;
-            // Ensure structures exist
             if(!userProgress.scoresBySubject) userProgress.scoresBySubject = {};
             if(!userProgress.attemptsBySubject) userProgress.attemptsBySubject = {};
 
@@ -460,10 +479,10 @@
             if (!data) return;
             activeSubjectKey = key;
             dom.home.classList.add('hidden');
-            dom.sheet.classList.remove('hidden');
+            dom.sheet.classList.remove('hidden'); // This now toggles the 'fixed' container
             dom.sheetTitle.textContent = data.title;
             dom.sheetTag.textContent = data.subject;
-            dom.sheetTag.className = `px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-${data.theme}-100 text-${data.theme}-700`;
+            dom.sheetTag.className = `shrink-0 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-${data.theme}-100 text-${data.theme}-700`;
             dom.sourceContent.innerHTML = data.source;
             activeTasks = data.tasks;
             sessionStats = { correct: 0, total: data.tasks.length };
